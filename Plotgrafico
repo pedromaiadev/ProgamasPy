@@ -1,0 +1,17 @@
+import matplotlib.pyplot as plt
+
+# Dados fornecidos
+x = [10, 53, 5, 23, 42, 34, 33, 4, 30, 41, 32, 17, 27, 44, 38, 16, 13, 56, 43, 29, 46, 54, 37, 35, 28, 8, 24, 25, 20, 52, 51, 6, 2, 49, 36, 3, 60, 40, 31, 48, 7, 59, 9, 39, 50, 1, 12, 19, 18, 58, 14, 45, 22, 26, 55, 21, 15]
+y = [323, 311, 301, 295, 293, 293, 292, 292, 292, 290, 290, 289, 288, 286, 286, 286, 284, 283, 282, 281, 281, 281, 291, 291, 285, 274, 274, 273, 270, 271, 275, 277, 277, 277, 278, 256, 256, 254, 254, 253, 262, 262, 260, 260, 264, 264, 263, 263, 265, 265, 265, 268, 248, 231, 230, 230, 237]
+
+# Criando o gráfico
+plt.figure(figsize=(12, 8))
+plt.scatter(x, y, color='blue', marker='o')
+plt.xlabel('Número')
+plt.ylabel('Frequência')
+plt.title('Frequência dos Números')
+plt.grid(True)
+
+# Exibindo o gráfico
+plt.tight_layout()
+plt.show()

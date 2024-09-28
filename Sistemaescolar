@@ -1,0 +1,146 @@
+import json
+
+# Classe responsável por exibir os menus na tela
+class Menu:
+    @staticmethod
+    def exibir_menu_principal():
+        # Exibe o menu principal
+        print('\n----- MENU PRINCIPAL -----\n')
+        print('(1) Gerenciar estudantes')
+        print('(2) Gerenciar professores')
+        print('(3) Gerenciar disciplinas')
+        print('(4) Gerenciar turmas')
+        print('(5) Gerenciar matrículas')
+        print('(9) Sair')
+
+    @staticmethod
+    def exibir_menu_operacoes(titulo):
+        # Exibe o menu de operações de acordo com o título fornecido
+        print(f"\n***** {titulo} MENU DE OPERAÇÕES *****\n")
+        print('(1) Incluir')
+        print('(2) Listar')
+        print('(3) Excluir')
+        print('(4) Atualizar')
+        print('(9) Voltar ao menu principal')
+
+# Classe responsável por gerenciar os itens do sistema
+class Gerenciador:
+    def __init__(self, titulo, arquivo, campos, chave):
+        # Inicializa o gerenciador com as informações necessárias
+        self.titulo = titulo
+        self.arquivo = arquivo
+        self.campos = campos
+        self.chave = chave
+
+    def incluir_item(self):
+        # Adiciona um novo item ao arquivo JSON
+        print(f'\n----- INCLUIR {self.titulo} -----\n')
+        novo_item = {}
+        for campo in self.campos:
+            valor = input(f'Informe o(a) {campo}: ')
+            novo_item[campo] = valor
+        dados = self.recuperar_dados()
+        dados.append(novo_item)
+        self.salvar_dados(dados)
+        print(f'{self.titulo} incluído com sucesso!')
+
+    def listar_itens(self):
+        # Lista todos os itens cadastrados no arquivo JSON
+        dados = self.recuperar_dados()
+        if not dados:
+            print(f'\nNão há {self.titulo} cadastrados')
+        else:
+            print(f'\n----- LISTA DE {self.titulo.upper()} -----\n')
+            for item in dados:
+                print(', '.join([f"{campo.capitalize()}: {valor}" for campo, valor in item.items()]))
+
+    def excluir_item(self):
+        # Exclui um item do arquivo JSON com base no código fornecido
+        codigo = input(f'Informe o código do {self.titulo} que deseja excluir: ')
+        dados = self.recuperar_dados()
+        for item in dados:
+            if item.get(self.chave) == codigo:
+                dados.remove(item)
+                self.salvar_dados(dados)
+                print(f'{self.titulo} excluído com sucesso!')
+                return
+        print(f'{self.titulo} não encontrado.')
+
+    def atualizar_item(self):
+        # Atualiza um item do arquivo JSON com base no código fornecido
+        codigo = input(f'Informe o código do {self.titulo} que deseja editar: ')
+        dados = self.recuperar_dados()
+        for item in dados:
+            if item.get(self.chave) == codigo:
+                print(f'\n----- EDITAR {self.titulo} -----\n')
+                for campo in self.campos:
+                    valor = input(f'Informe o novo(a) {campo}: ')
+                    item[campo] = valor
+                self.salvar_dados(dados)
+                print(f'{self.titulo} atualizado com sucesso!')
+                return
+        print(f'{self.titulo} não encontrado.')
+
+    def salvar_dados(self, dados):
+        # Salva os dados no arquivo JSON
+        with open(self.arquivo, 'w') as file:
+            json.dump(dados, file)
+
+    def recuperar_dados(self):
+        # Recupera os dados do arquivo JSON
+        try:
+            with open(self.arquivo, 'r') as file:
+                dados = json.load(file)
+        except FileNotFoundError:
+            dados = []
+        return dados
+
+# Função principal do programa
+def main():
+    while True:
+        # Exibe o menu principal e aguarda a opção do usuário
+        Menu.exibir_menu_principal()
+        opcao_principal = input('\nInforme a opção desejada: ')
+
+        # Verifica se o usuário deseja sair do programa
+        if opcao_principal == '9':
+            print('\nFinalizando aplicação...')
+            break
+
+        # Verifica se a opção informada é válida
+        if opcao_principal not in ['1', '2', '3', '4', '5']:
+            print("\nOpção inválida!")
+            continue  
+
+        # Dicionário contendo as opções de gerenciamento
+        opcoes = {
+            '1': {"titulo": "Estudante", "arquivo": "estudantes.json", "campos": ["Código", "Nome", "CPF"], "chave": "Código"},
+            '2': {"titulo": "Professor", "arquivo": "professores.json", "campos": ["Código", "Nome", "CPF"], "chave": "Código"},
+            '3': {"titulo": "Disciplina", "arquivo": "disciplinas.json", "campos": ["Código", "Nome"], "chave": "Código"},
+            '4': {"titulo": "Turma", "arquivo": "turmas.json", "campos": ["Código", "Código do Professor", "Código da Disciplina"], "chave": "Código"},
+            '5': {"titulo": "Matrícula", "arquivo": "matriculas.json", "campos": ["Código da Turma", "Código do Estudante"], "chave": "Código da Turma"}
+        }
+
+        # Seleciona a opção de gerenciamento com base na opção principal informada
+        opcao = opcoes[opcao_principal]
+        gerenciador = Gerenciador(opcao["titulo"], opcao["arquivo"], opcao["campos"], opcao["chave"])
+
+        # Loop para exibir o menu de operações e aguardar a escolha do usuário
+        while True:
+            Menu.exibir_menu_operacoes(opcao["titulo"])
+            opcao_operacoes = input('\nInforme a opção desejada: ')
+            if opcao_operacoes == '1':
+                gerenciador.incluir_item()
+            elif opcao_operacoes == '2':
+                gerenciador.listar_itens()
+            elif opcao_operacoes == '3':
+                gerenciador.excluir_item()
+            elif opcao_operacoes == '4':
+                gerenciador.atualizar_item()
+            elif opcao_operacoes == '9':
+                break
+            else:
+                print('\nOpção inválida!')
+
+if __name__ == '__main__':
+    main()
